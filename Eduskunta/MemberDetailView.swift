@@ -15,7 +15,7 @@ struct MemberDetailView: View {
     }
     
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(alignment: .leading, spacing: 10) {
             AsyncImage(url: pictureURL) { phase in
                 switch phase {
                 case .success(let image):
@@ -33,7 +33,7 @@ struct MemberDetailView: View {
                     EmptyView()
                 }
             }
-            .frame(width: 250, height: 350)
+            .frame(width: 300, height: 450)
             .clipShape(Rectangle())
             Text("\(member.first) \(member.last)")
                 .font(.title)
@@ -41,8 +41,14 @@ struct MemberDetailView: View {
             Text("Puolue: \(member.party)")
             Text("Vaalipiiri: \(member.constituency)")
             Text("Syntynyt: \(String(member.bornYear))")
-            Text(member.minister ? "Ministeri: Kyllä" : "Ministeri: Ei")
-            Text("Twitter: \(member.twitter)")
+            HStack {
+                Text("Ministeri:")
+                Image(systemName: member.minister ? "checkmark.circle.fill" : "xmark.circle.fill")
+                    .foregroundStyle(member.minister ? .green : .red)
+            }
+            if !member.twitter.isEmpty {
+                Text("Twitter: \(member.twitter)")
+            }
         }
         .padding()
         .navigationTitle("\(member.first) \(member.last)")
