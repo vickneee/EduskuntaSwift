@@ -129,7 +129,7 @@ struct MemberDetailView: View {
                 }
                 
                 if !memberNotes.isEmpty {
-                    ForEach(memberNotes) { note in
+                    ForEach(memberNotes.sorted { $0.date > $1.date }) { note in
                         VStack(alignment: .leading, spacing: 4) {
                             HStack {
                                 Image(systemName: note.isPositive ? "hand.thumbsup.fill" : "hand.thumbsdown.fill")
@@ -137,6 +137,14 @@ struct MemberDetailView: View {
                                 Text(dateFormatter.string(from: note.date))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
+                                Spacer()
+                                // Delete button
+                                Button(role: .destructive) {
+                                    modelContext.delete(note)
+                                } label: {
+                                    Image(systemName: "trash")
+                                        .foregroundStyle(.red)
+                                }
                             }
                             Text(note.text)
                         }
@@ -145,10 +153,16 @@ struct MemberDetailView: View {
                         .background(Color(.systemGray6))
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
+                    .onDelete { indexSet in
+                        for index in indexSet {
+                            modelContext.delete(memberNotes[index])
+                        }
+                    }
                 }
             }
             .padding(.leading, 50)
             .padding(.trailing, 50)
+            .padding(.bottom, 30)
         }
     }
 }

@@ -12,16 +12,34 @@ struct MemberListView: View {
     let members: [Member]
     let party: String
     
+    @Query private var allNotes: [MemberNote]  // fetch all notes
+    
     // All unique constituencies derived from the member list
     private var constituencies: [String] {
         Array(Set(members.map { $0.constituency })).sorted()
     }
     
-    @State private var selectedConstituency: String = "All"
+    @State private var selectedConstituency: String = "Kaikki"
+    @State private var sortOrder: SortOrder? = .rating
+    
+    private func netRating(for member: Member) -> Int {
+        let notes = allNotes.filter { $0.memberPersonNumber == member.personNumber }
+        let likes = notes.filter { $0.isPositive }.count
+        let dislikes = notes.filter { !$0.isPositive }.count
+        return likes - dislikes
+    }
     
     private var filteredMembers: [Member] {
-        guard selectedConstituency != "All" else { return members }
-        return members.filter { $0.constituency == selectedConstituency }
+        let filtered = selectedConstituency == "Kaikki"
+        ? members
+        : members.filter { $0.constituency == selectedConstituency }
+        
+        switch sortOrder {
+        case .rating:     return filtered.sorted { netRating(for: $0) > netRating(for: $1) }
+        case .firstName:  return filtered.sorted { $0.first < $1.first }
+        case .lastName:   return filtered.sorted { $0.last < $1.last }
+        case nil:         return filtered
+        }
     }
     
     var body: some View {
@@ -29,11 +47,21 @@ struct MemberListView: View {
             NavigationLink {
                 MemberDetailView(member: member)
             } label: {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("\(member.first) \(member.last)")
-                    Text("\(member.constituency)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("\(member.first) \(member.last)")
+                        Text("\(member.constituency)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    
+                    // Show net rating
+                    let net = netRating(for: member)
+                    Label("\(net)", systemImage: net >= 0 ? "hand.thumbsup.fill" : "hand.thumbsdown.fill")
+                        .font(.caption.bold())
+                        .foregroundStyle(net >= 0 ? .green : .red)
+                    
                 }
             }
         }
@@ -41,20 +69,48 @@ struct MemberListView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    Picker("Constituency", selection: $selectedConstituency) {
-                        Text("All").tag("All")
-                        ForEach(constituencies, id: \.self) { constituency in
-                            Text(constituency).tag(constituency)
+                    // Sort section
+                    Section("Järjestys") {
+                        Button {
+                            sortOrder = sortOrder == .rating ? nil : .rating
+                        } label: {
+                            Label("Paras arvio ensin", systemImage: sortOrder == .rating ? "checkmark" : "")
+                        }
+                        Button {
+                            sortOrder = sortOrder == .firstName ? nil : .firstName
+                        } label: {
+                            Label("Etunimi", systemImage: sortOrder == .firstName ? "checkmark" : "")
+                        }
+                        Button {
+                            sortOrder = sortOrder == .lastName ? nil : .lastName
+                        } label: {
+                            Label("Sukunimi", systemImage: sortOrder == .lastName ? "checkmark" : "")
                         }
                     }
+                    Section("Vaalipiiri") {
+                        Button { selectedConstituency = "Kaikki" } label: {
+                                Label("Kaikki", systemImage: selectedConstituency == "Kaikki" ? "checkmark" : "")
+                            }
+                            ForEach(constituencies, id: \.self) { constituency in
+                                Button {
+                                    selectedConstituency = constituency
+                                } label: {
+                                    Label(constituency, systemImage: selectedConstituency == constituency ? "checkmark" : "")
+                                }
+                            }
+                    }
                 } label: {
-                    Label("Filter", systemImage: selectedConstituency == "All"
-                          ? "line.3.horizontal.decrease.circle"
-                          : "line.3.horizontal.decrease.circle.fill")
+                    Image(systemName: selectedConstituency != "Kaikki"
+                          ? "line.3.horizontal.decrease.circle.fill"
+                          : "line.3.horizontal.decrease.circle")
                 }
             }
         }
     }
+}
+
+enum SortOrder {
+    case rating, firstName, lastName
 }
 
 extension Member {
@@ -86,6 +142,7 @@ extension Member {
         ]
     }
 }
+
 
 #Preview {
     MemberListView(members: Member.previewList, party:  "Kok")
