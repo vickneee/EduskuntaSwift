@@ -32,30 +32,34 @@ struct MemberDetailView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 10) {
-                AsyncImage(url: pictureURL) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                    case .failure:
-                        Image(systemName: "person.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundStyle(.secondary)
-                    case .empty:
-                        ProgressView()
-                    @unknown default:
-                        EmptyView()
-                    }
+            // Image stays centered
+            AsyncImage(url: pictureURL) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                case .failure:
+                    Image(systemName: "person.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundStyle(.secondary)
+                case .empty:
+                    ProgressView()
+                @unknown default:
+                    EmptyView()
                 }
-                .frame(width: 300, height: 450)
-                .clipShape(Rectangle())
+            }
+            .frame(width: 225, height: 350)
+            .clipShape(Rectangle())
+            .frame(maxWidth: .infinity) // ← centers the image
+            
+            // Info section — same width as notes
+            VStack(alignment: .leading, spacing: 10) {
                 Text("\(member.first) \(member.last)")
                     .font(.title)
                 Text("Istumapaikka: \(member.seatNumber)")
-                Text("Puolue: \(member.party)")
+                Text("Puolue: \(member.party.capitalized)")
                 Text("Vaalipiiri: \(member.constituency)")
                 Text("Syntynyt: \(String(member.bornYear))")
                 HStack {
@@ -67,9 +71,10 @@ struct MemberDetailView: View {
                     Text("Twitter: \(member.twitter)")
                 }
             }
-            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading) // ← left-aligned, full width
+            .padding(.horizontal, 50)
+            .padding(.bottom, 20)
             .navigationTitle("\(member.first) \(member.last)")
-            
             
             // Notes section
             VStack(alignment: .leading, spacing: 12) {
@@ -85,10 +90,10 @@ struct MemberDetailView: View {
                     Button {
                         isPositive = true
                     } label: {
-                        Image(systemName: "plus")
+                        Image(systemName: "hand.thumbsup.fill")
                             .foregroundStyle(.white)
-                            .frame(width: 50, height: 50)
-                            .background(isPositive ? Color.green : Color.gray)
+                            .frame(width: 40, height: 40)
+                            .background(isPositive ? Color.green : Color.green.opacity(0.3))
                             .clipShape(Circle())
                     }
                     
@@ -96,10 +101,10 @@ struct MemberDetailView: View {
                     Button {
                         isPositive = false
                     } label: {
-                        Image(systemName: "minus")
+                        Image(systemName: "hand.thumbsdown.fill")
                             .foregroundStyle(.white)
-                            .frame(width: 50, height: 50)
-                            .background(!isPositive ? Color.gray : Color.gray.opacity(0.4))
+                            .frame(width: 40, height: 40)
+                            .background(!isPositive ? Color.red : Color.red.opacity(0.2))
                             .clipShape(Circle())
                     }
                     
@@ -124,15 +129,10 @@ struct MemberDetailView: View {
                 }
                 
                 if !memberNotes.isEmpty {
-                    TextField("Muistiinpano", text: $noteText, axis: .vertical)
-                        .lineLimit(3...6)
-                        .padding()
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.4)))
-                    
                     ForEach(memberNotes) { note in
                         VStack(alignment: .leading, spacing: 4) {
                             HStack {
-                                Image(systemName: note.isPositive ? "plus" : "minus")
+                                Image(systemName: note.isPositive ? "hand.thumbsup.fill" : "hand.thumbsdown.fill")
                                     .foregroundStyle(note.isPositive ? .green : .red)
                                 Text(dateFormatter.string(from: note.date))
                                     .font(.caption)
@@ -147,7 +147,8 @@ struct MemberDetailView: View {
                     }
                 }
             }
-            .padding(.top, 16)
+            .padding(.leading, 50)
+            .padding(.trailing, 50)
         }
     }
 }

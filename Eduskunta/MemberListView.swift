@@ -12,8 +12,20 @@ struct MemberListView: View {
     let members: [Member]
     let party: String
     
+    // All unique constituencies derived from the member list
+    private var constituencies: [String] {
+        Array(Set(members.map { $0.constituency })).sorted()
+    }
+    
+    @State private var selectedConstituency: String = "All"
+    
+    private var filteredMembers: [Member] {
+        guard selectedConstituency != "All" else { return members }
+        return members.filter { $0.constituency == selectedConstituency }
+    }
+    
     var body: some View {
-        List(members) { member in
+        List(filteredMembers) { member in
             NavigationLink {
                 MemberDetailView(member: member)
             } label: {
@@ -26,6 +38,22 @@ struct MemberListView: View {
             }
         }
         .navigationTitle(party)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Picker("Constituency", selection: $selectedConstituency) {
+                        Text("All").tag("All")
+                        ForEach(constituencies, id: \.self) { constituency in
+                            Text(constituency).tag(constituency)
+                        }
+                    }
+                } label: {
+                    Label("Filter", systemImage: selectedConstituency == "All"
+                          ? "line.3.horizontal.decrease.circle"
+                          : "line.3.horizontal.decrease.circle.fill")
+                }
+            }
+        }
     }
 }
 
