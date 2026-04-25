@@ -35,11 +35,11 @@ struct MemberListView: View {
         : members.filter { $0.constituency == selectedConstituency }
         
         let searched = searchText.isEmpty
-                ? filtered
-                : filtered.filter {
-                    $0.first.localizedCaseInsensitiveContains(searchText) ||
-                    $0.last.localizedCaseInsensitiveContains(searchText)
-                }
+        ? filtered
+        : filtered.filter {
+            $0.first.localizedCaseInsensitiveContains(searchText) ||
+            $0.last.localizedCaseInsensitiveContains(searchText)
+        }
         
         switch sortOrder {
         case .rating:     return searched.sorted { netRating(for: $0) > netRating(for: $1) }
@@ -61,17 +61,17 @@ struct MemberListView: View {
                         Text("\(member.constituency)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                        
                     }
                     Spacer()
-                    
                     // Show net rating
                     let net = netRating(for: member)
                     Label("\(net)", systemImage: net >= 0 ? "hand.thumbsup.fill" : "hand.thumbsdown.fill")
                         .font(.caption.bold())
                         .foregroundStyle(net >= 0 ? .green : .red)
-                    
                 }
             }
+            .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
         }
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Hae edustajaa")
         .navigationTitle(party)
@@ -83,31 +83,62 @@ struct MemberListView: View {
                         Button {
                             sortOrder = sortOrder == .rating ? nil : .rating
                         } label: {
-                            Label("Paras arvio ensin", systemImage: sortOrder == .rating ? "checkmark" : "")
+                            HStack {
+                                Text("Paras arvio ensin")
+                                Spacer()
+                                if sortOrder == .rating {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
                         }
                         Button {
                             sortOrder = sortOrder == .firstName ? nil : .firstName
                         } label: {
-                            Label("Etunimi", systemImage: sortOrder == .firstName ? "checkmark" : "")
+                            HStack {
+                                Text("Etunimi")
+                                Spacer()
+                                if sortOrder == .firstName {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
                         }
                         Button {
                             sortOrder = sortOrder == .lastName ? nil : .lastName
                         } label: {
-                            Label("Sukunimi", systemImage: sortOrder == .lastName ? "checkmark" : "")
+                            HStack {
+                                Text("Sukunimi")
+                                Spacer()
+                                if sortOrder == .lastName {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
                         }
                     }
+                    
                     // Sort section
                     Section("Vaalipiiri") {
                         Button { selectedConstituency = "Kaikki" } label: {
-                                Label("Kaikki", systemImage: selectedConstituency == "Kaikki" ? "checkmark" : "")
-                            }
-                            ForEach(constituencies, id: \.self) { constituency in
-                                Button {
-                                    selectedConstituency = constituency
-                                } label: {
-                                    Label(constituency, systemImage: selectedConstituency == constituency ? "checkmark" : "")
+                            HStack {
+                                Text("Kaikki")
+                                Spacer()
+                                if selectedConstituency == "Kaikki" {
+                                    Image(systemName: "checkmark")
                                 }
                             }
+                        }
+                        ForEach(constituencies, id: \.self) { constituency in
+                            Button {
+                                selectedConstituency = constituency
+                            } label: {
+                                HStack {
+                                    Text(constituency)
+                                    Spacer()
+                                    if selectedConstituency == constituency {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
                     }
                 } label: {
                     Image(systemName: selectedConstituency != "Kaikki"

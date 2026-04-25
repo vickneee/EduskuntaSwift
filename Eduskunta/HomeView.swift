@@ -26,7 +26,6 @@ struct HomeView: View {
                     Text("Suomen Eduskunta")
                         .font(.largeTitle)
                         .fontWeight(.bold)
-                        .foregroundStyle(Color.parliamentBlue)
                     Image("Flag_of_Finland")
                         .resizable()
                         .scaledToFit()

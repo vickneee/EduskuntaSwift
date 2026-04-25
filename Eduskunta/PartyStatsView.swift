@@ -13,7 +13,7 @@ struct PartyStatsView: View {
     
     @Query private var allNotes: [MemberNote]
     
-    // PartyStat Identifiable 
+    // PartyStat Identifiable
     private struct PartyStat: Identifiable {
         let id = UUID()
         let party: String
@@ -41,23 +41,41 @@ struct PartyStatsView: View {
     
     var body: some View {
         List(stats) { stat in
-            VStack {
-                Text(stat.party.capitalized)
-                    .font(.headline)
-                
-                HStack {
-                    HStack(spacing: 16) {
-                        Label("\(stat.likes)", systemImage: "hand.thumbsup.fill")
-                            .foregroundStyle(.green)
-                        Label("\(stat.dislikes)", systemImage: "hand.thumbsdown.fill")
-                            .foregroundStyle(.red)
+            NavigationLink {
+                MemberListView(
+                    members: allMembers.filter { $0.party == stat.party },
+                    party: stat.party.capitalized
+                )
+            } label: {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(stat.party.capitalized)
+                        .font(.subheadline)
+                        .fontWeight(.bold)
+                    
+                    HStack {
+                        HStack(spacing: 2) {
+                            Image(systemName: "hand.thumbsup.fill")
+                                .foregroundStyle(.green)
+                                .imageScale(.small)
+                            Text("\(stat.likes)")
+                                .foregroundStyle(.green)
+                        }
+                        .font(.caption.bold())
+                        
+                        HStack(spacing: 2) {
+                            Image(systemName: "hand.thumbsdown.fill")
+                                .foregroundStyle(.red)
+                                .imageScale(.small)
+                            Text("\(stat.dislikes)")
+                                .foregroundStyle(.red)
+                        }
+                        .font(.caption.bold())
                         Spacer()
                         let net = stat.net
                         Text(net >= 0 ? "+\(net)" : "\(net)")
                             .font(.headline)
                             .foregroundStyle(net > 0 ? .green : net < 0 ? .red : .secondary)
                     }
-                    .font(.subheadline.bold())
                     // Progress bar
                     GeometryReader { geo in
                         let total = stat.likes + stat.dislikes
@@ -65,16 +83,16 @@ struct PartyStatsView: View {
                         
                         ZStack(alignment: .leading) {
                             RoundedRectangle(cornerRadius: 4)
-                                .fill(Color.red.opacity(0.3))
+                                .fill(total == 0 ? Color.gray.opacity(0.3) : Color.red.opacity(0.3))
                                 .frame(height: 8)
                             RoundedRectangle(cornerRadius: 4)
                                 .fill(Color.green)
                                 .frame(width: likeWidth, height: 8)
                         }
                     }
-                    .frame(height: 8)
+                    .frame(height: 6)
                 }
-                .padding(.vertical, 6)
+                .padding(.vertical, 2)
             }
             .navigationTitle("Puoluetilastot")
             .overlay {
