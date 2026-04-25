@@ -9,11 +9,13 @@ import SwiftUI
 import SwiftData
 
 struct MemberDetailView: View {
+    let member: Member
+    
     @Environment(\.modelContext) private var modelContext
     @Query private var allNotes: [MemberNote]
     @State private var noteText = ""
     @State private var isPositive = true
-    let member: Member
+    @State private var editingNote: MemberNote? = nil
     
     var memberNotes: [MemberNote] {
         allNotes.filter { $0.memberPersonNumber == member.personNumber }
@@ -111,15 +113,25 @@ struct MemberDetailView: View {
                     Spacer()
                     
                     // Save button
-                    Button("Tallenna") {
+                    Button(editingNote == nil ? "Tallenna" : "Päivitä") {
                         guard !noteText.isEmpty else { return }
-                        let note = MemberNote(
-                            memberPersonNumber: member.personNumber,
-                            text: noteText,
-                            isPositive: isPositive
-                        )
-                        modelContext.insert(note)
+                        
+                        if let editing = editingNote {
+                            // Update existing
+                            editing.text = noteText
+                            editing.isPositive = isPositive
+                            editingNote = nil
+                        } else {
+                            // Create new
+                            let note = MemberNote(
+                                memberPersonNumber: member.personNumber,
+                                text: noteText,
+                                isPositive: isPositive
+                            )
+                            modelContext.insert(note)
+                        }
                         noteText = ""
+                        isPositive = true
                     }
                     .foregroundStyle(.white)
                     .padding(.horizontal, 20)
@@ -138,19 +150,30 @@ struct MemberDetailView: View {
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                 Spacer()
+                                // Edit button
+                                Button {
+                                    editingNote = note
+                                    noteText = note.text
+                                    isPositive = note.isPositive
+                                } label: {
+                                    Image(systemName: "pencil")
+                                        .foregroundStyle(.blue)
+                                        .imageScale(.medium)
+                                }
                                 // Delete button
                                 Button(role: .destructive) {
                                     modelContext.delete(note)
                                 } label: {
                                     Image(systemName: "trash")
                                         .foregroundStyle(.red)
+                                        .imageScale(.small)
                                 }
                             }
                             Text(note.text)
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color(.systemGray6))
+                        .background(editingNote?.id == note.id ? Color.blue.opacity(0.1) : Color(.systemGray6))
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
                     .onDelete { indexSet in
