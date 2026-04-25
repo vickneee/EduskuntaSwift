@@ -14,8 +14,8 @@ struct MemberDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var allNotes: [MemberNote]
     @State private var noteText = ""
-    @State private var isPositive = true
     @State private var editingNote: MemberNote? = nil
+    @State private var isPositive = true
     
     var memberNotes: [MemberNote] {
         allNotes.filter { $0.memberPersonNumber == member.personNumber }
@@ -88,7 +88,7 @@ struct MemberDetailView: View {
                     .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.4)))
                 
                 HStack {
-                    // + button
+                    // Like button
                     Button {
                         isPositive = true
                     } label: {
@@ -99,7 +99,7 @@ struct MemberDetailView: View {
                             .clipShape(Circle())
                     }
                     
-                    // - button
+                    // Dislike button
                     Button {
                         isPositive = false
                     } label: {
@@ -112,7 +112,7 @@ struct MemberDetailView: View {
                     
                     Spacer()
                     
-                    // Save button
+                    // Save or Update button
                     Button(editingNote == nil ? "Tallenna" : "Päivitä") {
                         guard !noteText.isEmpty else { return }
                         
@@ -140,6 +140,7 @@ struct MemberDetailView: View {
                     .clipShape(Capsule())
                 }
                 
+                // Member notes
                 if !memberNotes.isEmpty {
                     ForEach(memberNotes.sorted { $0.date > $1.date }) { note in
                         VStack(alignment: .leading, spacing: 4) {
@@ -190,6 +191,7 @@ struct MemberDetailView: View {
     }
 }
 
+// Preview extension
 extension Member {
     static var preview: Member {
         Member(

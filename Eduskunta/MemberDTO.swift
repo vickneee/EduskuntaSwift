@@ -28,7 +28,7 @@ extension MemberDTO {
             first: first,
             party: party,
             minister: minister,
-            twitter: twitter ?? "",
+            twitter: twitter ?? "", // Can be nil empty
             bornYear: bornYear,
             constituency: constituency
         )

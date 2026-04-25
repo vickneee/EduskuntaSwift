@@ -12,7 +12,7 @@ class Rating {
     var isPositive: Bool
     var comment: String
 
-    var member: Member?   // relation back
+    var member: Member?   // Relation back
 
     init(isPositive: Bool, comment: String, member: Member?) {
         self.isPositive = isPositive

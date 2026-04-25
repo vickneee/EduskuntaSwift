@@ -35,11 +35,11 @@ struct PartiesView: View {
             }
         }
     }
-    // group by party
+    // Group by party
     var groupedParties: [String: [Member]] {
         Dictionary(grouping: members, by: { $0.party })
     }
-    // load JSON → save to SwiftData
+    // Load JSON → save to SwiftData
     func loadData() async {
         do {
             let dtos = try await fetchMembers()

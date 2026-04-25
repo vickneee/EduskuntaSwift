@@ -6,10 +6,11 @@
 //
 
 import SwiftUI
-
-
+import SwiftData
 
 struct HomeView: View {
+    @Query private var allMembers: [Member] // Fetch all members data
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -37,6 +38,7 @@ struct HomeView: View {
                         .scaledToFit()
                         .frame(width: 140, height: 140)
                         .foregroundStyle(Color.parliamentBlue)
+                    // Navigation
                     NavigationLink {
                         PartiesView()
                     } label: {
@@ -48,6 +50,12 @@ struct HomeView: View {
                             .cornerRadius(25)
                     }
                     Spacer()
+                    // Navigation
+                    NavigationLink {
+                        PartyStatsView(allMembers: allMembers)
+                    } label: {
+                        Label("Puoluetilastot", systemImage: "chart.bar.fill")
+                    }
                 }
                 .padding()
             }

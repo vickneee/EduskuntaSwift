@@ -14,10 +14,10 @@ struct MemberListView: View {
     
     @State private var selectedConstituency: String = "Kaikki"
     @State private var sortOrder: SortOrder? = .rating
-    @Query private var allNotes: [MemberNote]  // fetch all notes
     @State private var searchText: String = ""
+    @Query private var allNotes: [MemberNote]  // Fetch all members notes
     
-    // All unique constituencies derived from the member list
+    // All unique constituencies for members
     private var constituencies: [String] {
         Array(Set(members.map { $0.constituency })).sorted()
     }
@@ -50,6 +50,7 @@ struct MemberListView: View {
     }
     
     var body: some View {
+        // Filtered members
         List(filteredMembers) { member in
             NavigationLink {
                 MemberDetailView(member: member)
@@ -95,6 +96,7 @@ struct MemberListView: View {
                             Label("Sukunimi", systemImage: sortOrder == .lastName ? "checkmark" : "")
                         }
                     }
+                    // Sort section
                     Section("Vaalipiiri") {
                         Button { selectedConstituency = "Kaikki" } label: {
                                 Label("Kaikki", systemImage: selectedConstituency == "Kaikki" ? "checkmark" : "")
@@ -117,10 +119,12 @@ struct MemberListView: View {
     }
 }
 
+// Sorted const variables
 enum SortOrder {
     case rating, firstName, lastName
 }
 
+// Preview extension
 extension Member {
     static var previewList: [Member] {
         [

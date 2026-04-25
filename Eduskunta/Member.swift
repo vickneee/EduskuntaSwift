@@ -19,7 +19,7 @@ class Member {
     var bornYear: Int
     var constituency: String
 
-    var ratings: [Rating] = []   // relationship
+    var ratings: [Rating] = []   // Relationship
 
     init(personNumber: Int,
          seatNumber: Int,
