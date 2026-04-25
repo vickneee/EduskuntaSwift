@@ -12,15 +12,15 @@ struct MemberListView: View {
     let members: [Member]
     let party: String
     
+    @State private var selectedConstituency: String = "Kaikki"
+    @State private var sortOrder: SortOrder? = .rating
     @Query private var allNotes: [MemberNote]  // fetch all notes
+    @State private var searchText: String = ""
     
     // All unique constituencies derived from the member list
     private var constituencies: [String] {
         Array(Set(members.map { $0.constituency })).sorted()
     }
-    
-    @State private var selectedConstituency: String = "Kaikki"
-    @State private var sortOrder: SortOrder? = .rating
     
     private func netRating(for member: Member) -> Int {
         let notes = allNotes.filter { $0.memberPersonNumber == member.personNumber }
@@ -34,11 +34,18 @@ struct MemberListView: View {
         ? members
         : members.filter { $0.constituency == selectedConstituency }
         
+        let searched = searchText.isEmpty
+                ? filtered
+                : filtered.filter {
+                    $0.first.localizedCaseInsensitiveContains(searchText) ||
+                    $0.last.localizedCaseInsensitiveContains(searchText)
+                }
+        
         switch sortOrder {
-        case .rating:     return filtered.sorted { netRating(for: $0) > netRating(for: $1) }
-        case .firstName:  return filtered.sorted { $0.first < $1.first }
-        case .lastName:   return filtered.sorted { $0.last < $1.last }
-        case nil:         return filtered
+        case .rating:     return searched.sorted { netRating(for: $0) > netRating(for: $1) }
+        case .firstName:  return searched.sorted { $0.first < $1.first }
+        case .lastName:   return searched.sorted { $0.last < $1.last }
+        case nil:         return searched
         }
     }
     
@@ -65,6 +72,7 @@ struct MemberListView: View {
                 }
             }
         }
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Hae edustajaa")
         .navigationTitle(party)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
