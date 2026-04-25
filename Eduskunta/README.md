@@ -49,3 +49,15 @@ Eduskunta App is a simple iOS application that demonstrates using NavigationStac
  - SwiftData (Local database) 
 
  - @State / @Query (State management)
+
+
+## Screenshots
+
+<p align="center">
+<img src="./resources/Screenshot_20260315_184632.png" width="35%" alt="iOS Mobile App Screen - Eduskunta Navigations screen"/><img src="./resources/Screenshot_20260315_184640.png" width="35%" alt="iOS Mobile App Screen - Eduskunta Navigations screen"/>
+</p>
+
+
+## Video Link
+
+[YT Video Link](https://www.youtube.com/shorts/hM7gmWS9co8)
