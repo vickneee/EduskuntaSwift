@@ -6,13 +6,13 @@ Eduskunta App is a simple iOS application that demonstrates using NavigationStac
 
 - Two-level browsing: Party → Members list — Users can browse members by party, then drill down into a filtered members list per party
 
-- Sorting & Filtering (MemberListView)
+- Sorting & Filtering (MemberListView)
 
-    - Sort by firt name, last name or highest rating
+    - Sort by first name, last name or highest rating
     - Filter by constituency via toolbar menu
-    - Active filter indicated by lilled filter icon
+    - Active filter indicated by filled filter icon
       
-- Search (MemberListView)
+- Search (MemberListView)
       - Search bar filters members by first or last name
 
 
@@ -55,7 +55,7 @@ Eduskunta App is a simple iOS application that demonstrates using NavigationStac
 ## Screenshots
 
 <p align="center">
-<img src="./resources/Screenshot_20260315_184632.png" width="35%" alt="iOS Mobile App Screen - Eduskunta Navigations screen"/><img src="./resources/Screenshot_20260315_184640.png" width="35%" alt="iOS Mobile App Screen - Eduskunta Navigations screen"/>
+<img src="./resources/Simulator_Screenshot_iPhone_17_Pro_2026_04_25_19.22.59.png" width="35%" alt="iOS Mobile App Screen - Eduskunta Navigations screen"/><img src="./resources/Screenshot_20260315_184640.png" width="35%" alt="iOS Mobile App Screen - Eduskunta Navigations screen"/>
 </p>
 
 
