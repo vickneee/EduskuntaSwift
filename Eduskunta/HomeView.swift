@@ -8,12 +8,20 @@
 import SwiftUI
 import SwiftData
 
+/* The app's main entry screen showing the Finnish Parliament branding
+    and navigation to member lists and party statistics.
+ */
 struct HomeView: View {
-    @Query private var allMembers: [Member] // Fetch all members data
+    /*
+     All parliament members fetched from the local SwiftData database.
+     Automatically updates the view when the database changes.
+    */
+    @Query private var allMembers: [Member]
     
     var body: some View {
         NavigationStack {
             ZStack {
+                // Background gradient from parliament blue to white
                 LinearGradient(
                     colors: [Color.parliamentBlue.opacity(0.4), Color.white],
                     startPoint: .top,
@@ -37,7 +45,8 @@ struct HomeView: View {
                         .scaledToFit()
                         .frame(width: 140, height: 140)
                         .foregroundStyle(Color.parliamentBlue)
-                    // Navigation
+                    
+                    // Navigates to the full list of members grouped by party
                     NavigationLink {
                         PartiesView()
                     } label: {
@@ -49,7 +58,8 @@ struct HomeView: View {
                             .cornerRadius(25)
                     }
                     Spacer()
-                    // Navigation
+                    
+                    // Navigates to party statistics, passing all members as data
                     NavigationLink {
                         PartyStatsView(allMembers: allMembers)
                     } label: {
@@ -62,6 +72,7 @@ struct HomeView: View {
     }
 }
 
+// Extends `Color` with app-specific branding colors.
 extension Color {
     static let parliamentBlue = Color(red: 0/255, green: 47/255, blue: 108/255)
 }

@@ -8,26 +8,37 @@
 import SwiftUI
 import SwiftData
 
+// Displays detailed information about a parliament member,
+// including their photo, personal info, and user-written notes.
 struct MemberDetailView: View {
+    // The member whose details are displayed.
     let member: Member
     
+    // SwiftData context used to insert and delete notes.
     @Environment(\.modelContext) private var modelContext
+    // All notes in the database — filtered by member in `memberNotes`.
     @Query private var allNotes: [MemberNote]
+    // The current text in the note input field.
     @State private var noteText = ""
+    // The note currently being edited, or `nil` if creating a new one.
     @State private var editingNote: MemberNote? = nil
+    // Whether the note being written is positive (`true`) or negative (`false`).
     @State private var isPositive = true
     
+    // Notes belonging only to this member, filtered from all notes.
     var memberNotes: [MemberNote] {
         allNotes.filter { $0.memberPersonNumber == member.personNumber }
     }
     
-    // Date formatter
+    // Formats note dates as "yyyy-MM-dd" for display.
     var dateFormatter: DateFormatter {
         let f = DateFormatter()
         f.dateFormat = "yyyy-MM-dd"
         return f
     }
     
+    // Constructs the remote URL for the member's profile picture.
+    // Returns `nil` if the URL string is malformed.
     var pictureURL: URL? {
         URL(string: "https://users.metropolia.fi/~peterh/edustajakuvat/\(member.last)-\(member.first)-web-\(member.personNumber).jpg")
     }
@@ -56,7 +67,7 @@ struct MemberDetailView: View {
             .clipShape(Rectangle())
             .frame(maxWidth: .infinity) // ← centers the image
             
-            // Info section — same width as notes
+            // Member info section
             VStack(alignment: .leading, spacing: 10) {
                 Text("\(member.first) \(member.last)")
                     .font(.title)
@@ -78,7 +89,7 @@ struct MemberDetailView: View {
             .padding(.bottom, 20)
             .navigationTitle("\(member.first) \(member.last)")
             
-            // Notes section
+            // Notes section — create, edit, and delete notes
             VStack(alignment: .leading, spacing: 12) {
                 Text("Lisää muistiinpano")
                     .fontWeight(.bold)
@@ -112,17 +123,17 @@ struct MemberDetailView: View {
                     
                     Spacer()
                     
-                    // Save or Update button
+                    // Saves a new note or updates the note being edited.
                     Button(editingNote == nil ? "Tallenna" : "Päivitä") {
                         guard !noteText.isEmpty else { return }
                         
                         if let editing = editingNote {
-                            // Update existing
+                            // Update existing note in place
                             editing.text = noteText
                             editing.isPositive = isPositive
                             editingNote = nil
                         } else {
-                            // Create new
+                            // Insert new note into SwiftData
                             let note = MemberNote(
                                 memberPersonNumber: member.personNumber,
                                 text: noteText,
@@ -130,6 +141,7 @@ struct MemberDetailView: View {
                             )
                             modelContext.insert(note)
                         }
+                        // Reset input fields after save
                         noteText = ""
                         isPositive = true
                     }
@@ -140,18 +152,20 @@ struct MemberDetailView: View {
                     .clipShape(Capsule())
                 }
                 
-                // Member notes
+                // List of existing notes, sorted newest first
                 if !memberNotes.isEmpty {
                     ForEach(memberNotes.sorted { $0.date > $1.date }) { note in
                         VStack(alignment: .leading, spacing: 4) {
                             HStack {
                                 Image(systemName: note.isPositive ? "hand.thumbsup.fill" : "hand.thumbsdown.fill")
                                     .foregroundStyle(note.isPositive ? .green : .red)
+                                
+                                // Formatted creation date
                                 Text(dateFormatter.string(from: note.date))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                 Spacer()
-                                // Edit button
+                                // Loads note into input fields for editing
                                 Button {
                                     editingNote = note
                                     noteText = note.text
@@ -161,7 +175,7 @@ struct MemberDetailView: View {
                                         .foregroundStyle(.blue)
                                         .imageScale(.medium)
                                 }
-                                // Delete button
+                                // Permanently deletes this note from SwiftData
                                 Button(role: .destructive) {
                                     modelContext.delete(note)
                                 } label: {
@@ -174,9 +188,11 @@ struct MemberDetailView: View {
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        // Highlights the note currently being edited
                         .background(editingNote?.id == note.id ? Color.blue.opacity(0.1) : Color(.systemGray6))
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
+                    // Swipe-to-delete support
                     .onDelete { indexSet in
                         for index in indexSet {
                             modelContext.delete(memberNotes[index])
