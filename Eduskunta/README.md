@@ -22,19 +22,19 @@ Eduskunta App is a simple iOS application that demonstrates using NavigationStac
 
 - Note editing and deletion (MemberDetailView)
       
-      - Pencil icon loads the existing note into the text field for editing
-      - Trash icon deletes the note permanently
-      - Save button changes to "Update" when in edit mode
-      - The note being edited is highlighted with a blue background
+  - Pencil icon loads the existing note into the text field for editing
+  - Trash icon deletes the note permanently
+  - Save button changes to "Update" when in edit mode
+  - The note being edited is highlighted with a blue background
 
 - Offline support with SwiftData — Member data and notes are persisted locally using SwiftData, no internet connection required after initial load
 
 - PartyStatistics (PartyStatsView)
 
-      - Displays likes and dislikes per party from all member notes
-      - Parties are ranked by net score (likes minus dislikes)
-      - Each row shows a green/red progress bar
-      - Net score is displayed as green + or red – number
+  - Displays likes and dislikes per party from all member notes
+  - Parties are ranked by net score (likes minus dislikes)
+  - Each row shows a green/red progress bar
+  - Net score is displayed as green + or red – number
 
 - Simple and responsive UI — Clean SwiftUI interface with dark and light mode support
 
