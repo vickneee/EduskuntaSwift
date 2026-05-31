@@ -55,7 +55,7 @@ Eduskunta App is a simple iOS application that demonstrates using NavigationStac
 ## Screenshots
 
 <p align="center">
-<img src="./resources/Simulator_Screenshot_iPhone_17_Pro_2026_04_25_19.22.59.png" width="35%" alt="iOS Mobile App Screen - Eduskunta Navigations screen"/> <img src="./resources/Simulator_Screenshot_iPhone_17_Pro_2026-04-25_19.15.27.png" width="35%" alt="iOS Mobile App Screen - Eduskunta Navigations screen"/>
+<img src="./resources/Eduskunta/Simulator_Screenshot_iPhone_17_Pro_2026_04_25_19.22.59.png" width="35%" alt="iOS Mobile App Screen - Eduskunta Navigations screen"/> <img src="./resources/Simulator_Screenshot_iPhone_17_Pro_2026-04-25_19.15.27.png" width="35%" alt="iOS Mobile App Screen - Eduskunta Navigations screen"/>
 </p>
 
 
